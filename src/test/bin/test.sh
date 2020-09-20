@@ -4,9 +4,12 @@ DIR=$(dirname "${BASH_SOURCE[0]}")
 
 source "${DIR}/bank_functions.sh"
 
-N_ACCOUNTS=100
-N_OPS=1000
-N_PAR=10
+trap "pkill -KILL -P $$; exit 255" SIGINT SIGTERM
+
+TMP_DIR=$(config tmpdir)
+N_ACCOUNTS=$(config naccounts)
+N_OPS=$(config nops)
+N_PAR=$(config npar)
 
 random_transfer(){    
     from=$((RANDOM % N_ACCOUNTS))
@@ -19,8 +22,14 @@ if [[ "$1" == "-create" ]]
 then    
     if [ "$(config local)" == "false" ]
     then
+	k8s_create_all_pods
 	gsutil rm -r gs://$(config bucket)/* >&/dev/null # clean bucket
-    	k8s_create_all_pods
+    else
+	docker run --rm -d \
+	       --env BACKEND=$(config backend) \
+	       --mount type=bind,source=${TMP_DIR}/bank,destination=/tmp/bank \
+	       --net host \
+	       0track/transactions:latest > /dev/null
     fi
 elif [[ "$1" == "-delete" ]]
 then    
@@ -28,21 +37,29 @@ then
     then
     	k8s_delete_all_pods
     fi
-elif [[ "$1" == "-populate" ]]
+    docker kill $(docker ps | grep transaction | awk '{print $1}')
+elif [[ "$1" == "-crash" ]]
 then    
-    for i in $(seq 0 $((N_ACCOUNTS-1)));
-    do
-	create_account ${i}
-    done
+    if [ "$(config local)" == "false" ]
+    then
+	info "k8s not supported"
+    fi
+    docker kill -s KILL $(docker ps | grep transaction | awk '{print $1}')
+elif [[ "$1" == "-populate" ]]
+then
+    create_accounts 0 $((N_ACCOUNTS-1))
 elif [[ "$1" == "-clear" ]]
 then    
     clear_accounts
 elif [[ "$1" == "-run" ]]
 then
-    for i in $(seq 1 ${N_OPS});
-    do
-	random_transfer
-    done
+    # for i in $(seq 1 ${N_OPS});
+    # do
+    # 	random_transfer
+    # done
+    multiple_transfers 1 1 ${N_OPS} # > ${TMP_DIR}/client.log
+    # last=0; while true; do sleep 1; new=$(grep -o OK /tmp/log | wc -l); echo $((new-last)); last=${new}; done &
+    # wait
 elif [[ "$1" == "-concurrent-run" ]]
 then
     for i in $(seq 1 $((N_OPS/N_PAR)));

@@ -16,7 +16,7 @@ config() {
 
 info() {
     local message=$1
-    echo >& 2 "["$(date +%s:%N)"] ${message}"
+    echo "["$(date +%s:%N)"] ${message}"
 }
 
 log() {
@@ -47,8 +47,9 @@ k8s_create() {
         sed s,%CONTEXT%,${context},g |
 	sed s,%BUCKET%,$(config bucket),g |
 	sed s,%BUCKET_KEY%,$(config bucket_key),g |
-	sed s,%BUCKET_SECRET%,$(config bucket_secret),g \
-            >${file}
+	sed s,%BUCKET_SECRET%,$(config bucket_secret),g |
+    	sed s,%BACKEND%,$(config backend),g \
+	    >${file}
 
     # create pod
     kubectl --context="${context}" create -f ${file} >&/dev/null

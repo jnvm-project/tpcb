@@ -16,6 +16,18 @@ create_account(){
     log "create_account(${id}) @ ${proxy} -> ${res}"
 }
 
+
+create_accounts(){
+    if [ $# -ne 2 ]; then
+       echo "usage: create_accounts  start end"
+       exit -1
+    fi
+    start=$1
+    end=$2
+
+    curl -m 1 -s -X post "${proxy}/[${start}-${end}]" > /dev/null
+}
+
 get_balance(){
     if [ $# -ne 1 ]; then
         echo "usage: get_balance id"
@@ -38,6 +50,18 @@ transfer(){
     res=$(curl -m 1 -s -X put "${proxy}/${from}/${to}/${amount}")
     log "transfer(${from},${to},${amount}) @ ${proxy} -> ${res}"
 }
+
+multiple_transfers(){
+    if [ $# -ne 3 ]; then
+        echo "usage: multiple_transfers from to count"
+        exit -1
+    fi
+    from=$1
+    to=$2
+    count=$3
+    curl -m 1 -s -X put "${proxy}/${from}/${to}/[1-${count}]"
+}
+
 
 clear_accounts(){
     if [ $# -ne 0 ]; then

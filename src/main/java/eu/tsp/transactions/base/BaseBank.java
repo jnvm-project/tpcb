@@ -35,11 +35,13 @@ public class BaseBank implements Bank{
   @Override
   public void performTransfer(int from, int to, int amount){
     if (!this.accounts.containsKey(from)) {
-      throw new IllegalArgumentException("account not existing: "+from);
+      // throw new IllegalArgumentException("account not existing: "+from);
+      createAccount(from); // FIXME
     }
     
     if (!this.accounts.containsKey(to)) {
-      throw new IllegalArgumentException("account not existing: "+to);
+     // throw new IllegalArgumentException("account not existing: "+to);
+     createAccount(to); // FIXME
     }
 
     Account fromAccount = accounts.get(from);

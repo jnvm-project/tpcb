@@ -13,6 +13,7 @@ import org.infinispan.Cache;
 import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.configuration.cache.SingleFileStoreConfigurationBuilder;
 
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.transaction.LockingMode;
@@ -23,15 +24,26 @@ import eu.tsp.transactions.Account;
 
 public class DistributedBank implements Bank{
 
+  private static final String STORAGE_PATH = "/tmp/bank";
   private DefaultCacheManager cacheManager;
   private ConcurrentMap<Integer,Account> accounts;
 
-  public DistributedBank(){
+  public DistributedBank(boolean isPersisted){
     GlobalConfigurationBuilder gbuilder = GlobalConfigurationBuilder.defaultClusteredBuilder();
     gbuilder.transport().addProperty("configurationFile", "jgroups.xml");
     ConfigurationBuilder builder = new ConfigurationBuilder();
-    builder.clustering().cacheMode(CacheMode.DIST_SYNC);
+    builder.clustering().cacheMode(CacheMode.DIST_SYNC);    
     builder.transaction().transactionMode(TransactionMode.TRANSACTIONAL).lockingMode(LockingMode.PESSIMISTIC);
+
+    // persistence
+    if (isPersisted) {
+	SingleFileStoreConfigurationBuilder storeConfigurationBuilder= builder.persistence().addSingleFileStore();
+	storeConfigurationBuilder.location(STORAGE_PATH);
+	storeConfigurationBuilder.persistence().passivation(false); // write-through
+	storeConfigurationBuilder.fetchPersistentState(true);
+	storeConfigurationBuilder.purgeOnStartup(false);
+    }
+	
     cacheManager = new DefaultCacheManager(gbuilder.build(),builder.build());
     accounts = cacheManager.getCache();
   }
@@ -56,11 +68,13 @@ public class DistributedBank implements Bank{
   @Override
   public void performTransfer(int from, int to, int amount){ 
     if (!this.accounts.containsKey(from)) {
-      throw new IllegalArgumentException("account not existing: "+from);
+	// throw new IllegalArgumentException("account not existing: "+from);
+      createAccount(from); // FIXME
     }
     
     if (!this.accounts.containsKey(to)) {
-      throw new IllegalArgumentException("account not existing: "+to);
+	// throw new IllegalArgumentException("account not existing: "+to);
+      createAccount(to); // FIXME
     }
 
     boolean retry=false;
