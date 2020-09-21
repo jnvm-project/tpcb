@@ -80,7 +80,7 @@ exp(){
     tput
     run &
     child=$!
-    sleep 10; crash
+    sleep 20; crash
     start
     wait ${child}
     stop    
