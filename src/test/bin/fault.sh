@@ -66,9 +66,12 @@ exp(){
     naccounts=$2
     nops=$3
 
+    eviction=$((naccounts/10))
+    
     cat ${DIR}/exp.config.tmpl |
         sed s/%BACKEND%/${backend}/g |
         sed s/%NACCOUNTS%/${naccounts}/g |
+	sed s/%EVICTION%/${eviction}/g |
         sed s/%NOPS%/${nops}/g \
             > ${DIR}/exp.config
 

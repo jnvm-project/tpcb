@@ -27,6 +27,7 @@ then
     else
 	docker run --rm -d \
 	       --env BACKEND=$(config backend) \
+       	       --env EVICTION=$(config eviction) \
 	       --mount type=bind,source=${TMP_DIR}/bank,destination=/tmp/bank \
 	       --net host \
 	       0track/transactions:latest > /dev/null
