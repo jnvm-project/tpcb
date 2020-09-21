@@ -6,9 +6,13 @@ CONFIG="default-jgroups-tcp.xml"
 LOG_DIR="/tmp/bank"
 
 if [[ "${BACKEND}" == "" ]];
-
 then
     BACKEND="MAP"
+fi
+
+if [[ "${EVICTION}" == "" ]];
+then
+    EVICTION=0
 fi
 
 if [[ "${IP}" != "127.0.0.1" ]]
@@ -24,4 +28,4 @@ fi
 
 mv ${CONFIG} jgroups.xml
 
-java -cp ${JAR}:lib/* ${JVMARGS} eu.tsp.transactions.Server -backend ${BACKEND}
+java -cp ${JAR}:lib/* ${JVMARGS} eu.tsp.transactions.Server -backend ${BACKEND} -eviction ${EVICTION}

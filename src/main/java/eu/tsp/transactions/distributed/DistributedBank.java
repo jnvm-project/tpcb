@@ -28,20 +28,24 @@ public class DistributedBank implements Bank{
   private DefaultCacheManager cacheManager;
   private ConcurrentMap<Integer,Account> accounts;
 
-  public DistributedBank(boolean isPersisted){
+ public DistributedBank(boolean isPersisted, int eviction){
     GlobalConfigurationBuilder gbuilder = GlobalConfigurationBuilder.defaultClusteredBuilder();
     gbuilder.transport().addProperty("configurationFile", "jgroups.xml");
     ConfigurationBuilder builder = new ConfigurationBuilder();
-    builder.clustering().cacheMode(CacheMode.DIST_SYNC);    
+    builder.clustering().cacheMode(CacheMode.DIST_SYNC);
     builder.transaction().transactionMode(TransactionMode.TRANSACTIONAL).lockingMode(LockingMode.PESSIMISTIC);
 
+    // cache eviction
+    if (eviction>0) {
+	builder.memory().size(eviction);
+    }
+    
     // persistence
     if (isPersisted) {
 	SingleFileStoreConfigurationBuilder storeConfigurationBuilder= builder.persistence().addSingleFileStore();
-	storeConfigurationBuilder.location(STORAGE_PATH);
-	storeConfigurationBuilder.persistence().passivation(false); // write-through
-	storeConfigurationBuilder.fetchPersistentState(true);
-	storeConfigurationBuilder.purgeOnStartup(false);
+	storeConfigurationBuilder
+	    .location(STORAGE_PATH)
+	    .persistence().passivation(false); // write-through
     }
 	
     cacheManager = new DefaultCacheManager(gbuilder.build(),builder.build());
@@ -68,13 +72,11 @@ public class DistributedBank implements Bank{
   @Override
   public void performTransfer(int from, int to, int amount){ 
     if (!this.accounts.containsKey(from)) {
-	// throw new IllegalArgumentException("account not existing: "+from);
-      createAccount(from); // FIXME
+      createAccount(from);
     }
     
     if (!this.accounts.containsKey(to)) {
-	// throw new IllegalArgumentException("account not existing: "+to);
-      createAccount(to); // FIXME
+      createAccount(to);
     }
 
     boolean retry=false;

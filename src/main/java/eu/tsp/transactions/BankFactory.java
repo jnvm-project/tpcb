@@ -9,8 +9,8 @@ public class BankFactory{
     return new BaseBank();
   }
 
-  public Bank createDistributedBank(boolean isPersisted){
-    return new DistributedBank(isPersisted);
+    public Bank createDistributedBank(boolean isPersisted, int eviction){
+	return new DistributedBank(isPersisted, eviction);
   }
 
 }

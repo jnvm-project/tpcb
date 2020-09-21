@@ -22,8 +22,11 @@ public class Server {
   final static Logger LOG = LoggerFactory.getLogger(Server.class);
   enum Backend {MAP, MEM, SFS}
 
-  @Option(name = "-backend", usage = "MAP, MEM, FS")
+  @Option(name = "-backend", usage = "MAP, MEM, SFS")
   private Backend backend = Backend.MAP;
+
+  @Option(name = "-eviction", usage = "max. #objects before eviction")
+  private int eviction = 0;
     
   public static void main(String[] args) {
     new Server().doMain(args);
@@ -47,12 +50,14 @@ public class Server {
     final BankFactory factory = new BankFactory();
 
     LOG.info("Backend is "+backend);
+
+    LOG.info("Eviction set to "+eviction);
     
     Bank b = factory.createBaseBank();
-    if (backend.equals(Backend.SFS)) {
-	b = factory.createDistributedBank(true);	    
-    } else if (backend.equals(Backend.MEM)) {
-       b = factory.createDistributedBank(false);	   
+    if (backend.equals(Backend.MEM)) {
+	b = factory.createDistributedBank(false,eviction);
+    } else if (backend.equals(Backend.SFS)) {
+	b = factory.createDistributedBank(true,eviction);
     }
 
     final Bank bank = b;
