@@ -34,18 +34,17 @@ public class DistributedBank implements Bank{
     ConfigurationBuilder builder = new ConfigurationBuilder();
     builder.clustering().cacheMode(CacheMode.DIST_SYNC);
     builder.transaction().transactionMode(TransactionMode.TRANSACTIONAL).lockingMode(LockingMode.PESSIMISTIC);
-
-    // cache eviction
-    if (eviction>0) {
-	builder.memory().size(eviction);
-    }
     
     // persistence
-    if (isPersisted) {
+    if (isPersisted) {	
 	SingleFileStoreConfigurationBuilder storeConfigurationBuilder= builder.persistence().addSingleFileStore();
 	storeConfigurationBuilder
 	    .location(STORAGE_PATH)
 	    .persistence().passivation(false); // write-through
+	// cache eviction
+	if (eviction>0) {
+	    builder.memory().size(eviction);
+	}
     }
 	
     cacheManager = new DefaultCacheManager(gbuilder.build(),builder.build());
