@@ -2,7 +2,7 @@
 
 DIR=$(dirname "${BASH_SOURCE[0]}")
 
-trap "pkill -KILL -P $$; stop; exit 255" SIGINT SIGTERM
+trap "pkill -KILL -P $$; stop; wait; exit 255" SIGINT SIGTERM
 
 source "${DIR}/utils_functions.sh"
 
@@ -31,7 +31,7 @@ populate(){
 }
 
 run(){    
-    ${DIR}/test.sh -continuous-run > ${TMP_DIR}/client.log
+    ${DIR}/test.sh -continuous-run > ${TMP_DIR}/client.log &
     info "done"
 }
 
@@ -57,7 +57,6 @@ crash(){
 }
 
 stop(){
-    pkill -TERM -P $$ # FIXME
     ${DIR}/test.sh -delete > /dev/null
     info "stopped"
 }
@@ -82,18 +81,20 @@ exp(){
     start
     populate
     tput ${length}
-    child=$!
-    run &
+    child1=$!
+    run
+    child2=$!
     sleep $((length/2)); crash
     start
-    wait ${child}
-    stop    
+    wait ${child1}
+    kill ${child2}; wait
+    stop
 }
 
-N_ACCOUNTS=10000
-LENGTH=30 # in sec.
+N_ACCOUNTS=100000
+LENGTH=60 # in sec.
 
-for b in mem; # map mem sfs;
+for b in map mem sfs;
 do
     exp ${b} ${N_ACCOUNTS} ${LENGTH} > ${DIR}/${b}.log
 done

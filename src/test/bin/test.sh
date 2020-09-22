@@ -4,7 +4,7 @@ DIR=$(dirname "${BASH_SOURCE[0]}")
 
 source "${DIR}/bank_functions.sh"
 
-trap "pkill -KILL -P $$; exit 255" SIGINT SIGTERM
+trap "pkill -KILL -P $$; wait; exit 255" SIGINT SIGTERM
 
 TMP_DIR=$(config tmpdir)
 N_ACCOUNTS=$(config naccounts)
