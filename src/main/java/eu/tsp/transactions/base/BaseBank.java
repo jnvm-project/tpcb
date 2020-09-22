@@ -37,14 +37,14 @@ public class BaseBank implements Bank{
     if (!this.accounts.containsKey(from)) {
       createAccount(from);
     }
-    
+
     if (!this.accounts.containsKey(to)) {
-     createAccount(to);
+      createAccount(to);
     }
 
     Account fromAccount = accounts.get(from);
     Account toAccount = accounts.get(to);
-    
+
     fromAccount.setBalance(fromAccount.getBalance()-amount);
     toAccount.setBalance(toAccount.getBalance()+amount);
   }
@@ -53,11 +53,11 @@ public class BaseBank implements Bank{
   public void clear(){
     this.accounts.clear();
   }
-  
+
   @Override
   public void open(){}
 
   @Override
   public void close(){}
-  
+
 }

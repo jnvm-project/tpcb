@@ -1,7 +1,7 @@
 package eu.tsp.transactions;
 
 import java.io.Serializable;
-  
+
 public class Account implements Serializable{
   private int id;
   private int balance;
@@ -20,7 +20,7 @@ public class Account implements Serializable{
   }
 
   public void setBalance(int balance){
-    this.balance = balance;    
+    this.balance = balance;
   }
-  
+
 }

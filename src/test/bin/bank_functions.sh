@@ -7,10 +7,10 @@ proxy=$(get_proxy)
 
 create_account(){
     if [ $# -ne 1 ]; then
-        echo "usage: create_account id"
+        debug "usage: create_account id"
         exit -1
     fi
-    id=$1
+    local id=$1
 
     res=$(curl -m 1 -s -X post "${proxy}/${id}")
     log "create_account(${id}) @ ${proxy} -> ${res}"
@@ -19,55 +19,77 @@ create_account(){
 
 create_accounts(){
     if [ $# -ne 2 ]; then
-       echo "usage: create_accounts  start end"
+       debug "usage: create_accounts  start end"
        exit -1
     fi
-    start=$1
-    end=$2
+    local start=$1
+    local end=$2
 
     curl -m 1 -s -X post "${proxy}/[${start}-${end}]" > /dev/null
 }
 
 get_balance(){
     if [ $# -ne 1 ]; then
-        echo "usage: get_balance id"
+        debug "usage: get_balance id"
         exit -1
     fi
-    id=$1
-    res=$(curl -m 1 -s -X get "${proxy}/${id}")    
+    local id=$1
+    local res=$(curl -m 1 -s -X get "${proxy}/${id}")    
     log "get_balance(${id}) @ ${proxy} -> ${res}"
     echo ${res}
 }
 
 transfer(){
     if [ $# -ne 3 ]; then
-        echo "usage: transfer from to amount"
+        debug "usage: transfer from to amount"
         exit -1
     fi
-    from=$1
-    to=$2
-    amount=$3
-    res=$(curl -m 1 -s -X put "${proxy}/${from}/${to}/${amount}")
+    local from=$1
+    local to=$2
+    local amount=$3
+    local res=$(curl -m 1 -s -X put "${proxy}/${from}/${to}/${amount}")
     log "transfer(${from},${to},${amount}) @ ${proxy} -> ${res}"
 }
 
-multiple_transfers(){
-    if [ $# -ne 3 ]; then
-        echo "usage: multiple_transfers from to count"
+continuous_transfers(){
+    if [ $# -ne 1 ]; then
+        debug "usage: continuous_transfers #acounts"
         exit -1
     fi
-    from=$1
-    to=$2
-    count=$3
-    curl -m 1 -s -X put "${proxy}/${from}/${to}/[1-${count}]"
+
+    local accounts=$1
+    local max_amount=$(config max_amount)
+    
+    while true;
+    do
+	# start=`date +%s%N`
+	# generate requests
+	local urls=()
+	local max=50000 # due to ARG_MAX
+	local from=0
+	local to=1
+	local amount=1
+	for i in $(seq 1 ${max});
+	do
+	    from=$((RANDOM % ${accounts}))
+	    to=$((RANDOM % ${accounts}))
+	    amount=$((RANDOM % max_amount))
+	    urls+=(${proxy}/${from}/${to}/${amount})
+	done
+	# execute them
+	curl -m 1 -s -X put $(echo ${urls[@]})
+	# end=`date +%s%N`
+	# echo $(($((end-start))/1000000))
+    done
 }
 
 
 clear_accounts(){
     if [ $# -ne 0 ]; then
-        echo "usage: clear"
+        debug "usage: clear"
         exit -1
     fi
     res=$(curl -m 1 -s -X post "${proxy}/clear")
     log "create_account(${id}) @ ${proxy} -> ${res}"
 }
+

@@ -19,7 +19,7 @@ random_transfer(){
 }
 
 if [[ "$1" == "-create" ]]
-then    
+then
     if [ "$(config local)" == "false" ]
     then
 	k8s_create_all_pods
@@ -54,13 +54,14 @@ then
     clear_accounts
 elif [[ "$1" == "-run" ]]
 then
-    # for i in $(seq 1 ${N_OPS});
-    # do
-    # 	random_transfer
-    # done
-    multiple_transfers 1 1 ${N_OPS} # > ${TMP_DIR}/client.log
-    # last=0; while true; do sleep 1; new=$(grep -o OK /tmp/log | wc -l); echo $((new-last)); last=${new}; done &
-    # wait
+    for i in $(seq 1 ${N_OPS});
+    do
+    	random_transfer
+    done
+    wait
+elif [[ "$1" == "-continuous-run" ]]
+then
+    continuous_transfers ${N_ACCOUNTS}
 elif [[ "$1" == "-concurrent-run" ]]
 then
     for i in $(seq 1 $((N_OPS/N_PAR)));
@@ -81,3 +82,4 @@ then
     done	
     info "Total=${total}"    
 fi
+

@@ -6,7 +6,7 @@ trap "pkill -KILL -P $$; stop; exit 255" SIGINT SIGTERM
 
 source "${DIR}/utils_functions.sh"
 
-TMP_DIR=$(config tmpdir)
+TMP_DIR=$(config tmpdir) # FIXME
 
 if [ "$(config local)" == "false" ]
 then
@@ -31,16 +31,21 @@ populate(){
 }
 
 run(){    
-    ${DIR}/test.sh -run > ${TMP_DIR}/client.log
+    ${DIR}/test.sh -continuous-run > ${TMP_DIR}/client.log
     info "done"
 }
 
 tput(){
+    if [ $# -ne 1 ]; then
+        debug "usage: tput length"
+        exit -1
+    fi
+    local length=$1
     local new=1
-    while true;
+    for i in $(seq 1 ${length});
     do
 	sleep 1
-	new=$(grep -o OK ${TMP_DIR}/client.log | wc -l)
+	new=$(grep -ao OK ${TMP_DIR}/client.log | wc -l)
 	info "$((new-last))"
 	last=${new}
     done &
@@ -59,37 +64,36 @@ stop(){
 
 exp(){
     if [ $# -ne 3 ]; then
-        echo "usage: exp backend naccounts nops"
+        echo "usage: exp backend naccounts length"
         exit -1
     fi
     backend=$1
     naccounts=$2
-    nops=$3
+    length=$3
 
     eviction=$((naccounts/10))
     
     cat ${DIR}/exp.config.tmpl |
         sed s/%BACKEND%/${backend}/g |
         sed s/%NACCOUNTS%/${naccounts}/g |
-	sed s/%EVICTION%/${eviction}/g |
-        sed s/%NOPS%/${nops}/g \
+	sed s/%EVICTION%/${eviction}/g \
             > ${DIR}/exp.config
 
     start
     populate
-    tput
-    run &
+    tput ${length}
     child=$!
-    sleep 20; crash
+    run &
+    sleep $((length/2)); crash
     start
     wait ${child}
     stop    
 }
 
-N_ACCOUNTS=50000
-N_OPS=500000
+N_ACCOUNTS=10000
+LENGTH=30 # in sec.
 
-for b in map mem sfs;
+for b in mem; # map mem sfs;
 do
-    exp ${b} ${N_ACCOUNTS} ${N_OPS} > ${DIR}/${b}.log
+    exp ${b} ${N_ACCOUNTS} ${LENGTH} > ${DIR}/${b}.log
 done

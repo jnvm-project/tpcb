@@ -15,6 +15,7 @@
     <version.junit>4.10</version.junit>
     <version.slf4j>1.7.21</version.slf4j>
     <version.args4j>2.32</version.args4j>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <organization>

@@ -19,6 +19,11 @@ info() {
     echo "["$(date +%s:%N)"] ${message}"
 }
 
+debug() {
+    local message=$1
+    echo >& 2 ${message}
+}
+
 log() {
     if [[ $(config verbose) -eq 1 ]]
     then
