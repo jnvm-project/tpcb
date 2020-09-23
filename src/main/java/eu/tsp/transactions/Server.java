@@ -73,8 +73,8 @@ public class Server {
         post("/:start/:end", (req, res) -> {
             int start = Integer.parseInt(req.params("start"));
 	    int end = Integer.parseInt(req.params("end"));
+	    LOG.info("createAccounts("+start+","+end+")");
 	    for (int i=start; i<=end; i++) {
-		LOG.info("createAccount("+i+")");
 		bank.createAccount(i);
 	    }
             return "OK";
@@ -107,7 +107,7 @@ public class Server {
 
         Signal.handle(new Signal("INT"), sh);
         Signal.handle(new Signal("TERM"), sh);
-
+	
         Thread.currentThread().interrupt();
     }
 

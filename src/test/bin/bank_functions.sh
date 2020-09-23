@@ -12,7 +12,7 @@ create_account(){
     fi
     local id=$1
 
-    res=$(curl -m 1 -s -X post "${proxy}/${id}")
+    res=$(curl -s -X post "${proxy}/${id}")
     log "create_account(${id}) @ ${proxy} -> ${res}"
 }
 
@@ -25,7 +25,7 @@ create_accounts(){
     local start=$1
     local end=$2
 
-    curl -m 1 -s -X post "${proxy}/${start}/${end}" > /dev/null
+    curl -s -X post "${proxy}/${start}/${end}" > /dev/null
 }
 
 get_balance(){
@@ -34,7 +34,7 @@ get_balance(){
         exit -1
     fi
     local id=$1
-    local res=$(curl -m 1 -s -X get "${proxy}/${id}")    
+    local res=$(curl -s -X get "${proxy}/${id}")
     log "get_balance(${id}) @ ${proxy} -> ${res}"
     echo ${res}
 }
@@ -47,7 +47,7 @@ transfer(){
     local from=$1
     local to=$2
     local amount=$3
-    local res=$(curl -m 1 -s -X put "${proxy}/${from}/${to}/${amount}")
+    local res=$(curl -s -X put "${proxy}/${from}/${to}/${amount}")
     log "transfer(${from},${to},${amount}) @ ${proxy} -> ${res}"
 }
 
@@ -80,7 +80,7 @@ continuous_transfers(){
     # execute them
     while true;
     do
-	curl -m 1 -s -X put $(echo ${urls[@]})
+	curl -s -X put $(echo ${urls[@]})
     done
 }
 
@@ -90,7 +90,7 @@ clear_accounts(){
         debug "usage: clear"
         exit -1
     fi
-    res=$(curl -m 1 -s -X post "${proxy}/clear")
+    res=$(curl -s -X post "${proxy}/clear")
     log "create_account(${id}) @ ${proxy} -> ${res}"
 }
 

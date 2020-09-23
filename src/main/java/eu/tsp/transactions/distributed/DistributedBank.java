@@ -13,6 +13,7 @@ import org.infinispan.eviction.EvictionType;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.transaction.LockingMode;
 import org.infinispan.transaction.TransactionMode;
+import org.infinispan.commons.marshall.JavaSerializationMarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.transaction.TransactionManager;
@@ -28,17 +29,34 @@ public class DistributedBank implements Bank{
 
     public DistributedBank(boolean isPersisted, int eviction){
         GlobalConfigurationBuilder gbuilder = (new GlobalConfigurationBuilder()).nonClusteredDefault();
+	gbuilder.defaultCacheName("bank");
+	gbuilder.serialization()
+	    .marshaller(new JavaSerializationMarshaller())
+	    .whiteList()
+	    .addRegexps("eu.tsp.transactions.Account");
         // gbuilder.transport().addProperty("configurationFile", "jgroups.xml");
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.clustering().cacheMode(CacheMode.LOCAL);
         builder.transaction().transactionMode(TransactionMode.TRANSACTIONAL).lockingMode(LockingMode.PESSIMISTIC);
-
+	
         // persistence
         if (isPersisted) {
-            SingleFileStoreConfigurationBuilder storeConfigurationBuilder= builder.persistence().addSingleFileStore();
+
+	    LOG.info("Persistence on");
+            SingleFileStoreConfigurationBuilder storeConfigurationBuilder = builder.persistence()
+		.addSingleFileStore()
+		.maxEntries(0)
+		.location(STORAGE_PATH)
+		.preload(false)
+		.fetchPersistentState(true)
+		.purgeOnStartup(false)
+		.shared(false);
+
+	    LOG.info("Write-through activated");
             storeConfigurationBuilder
-                    .location(STORAGE_PATH)
-                    .persistence().passivation(false); // write-through
+		.persistence()
+		.passivation(false); // write-through
+	    
             // cache eviction
             if (eviction>0) {
                 LOG.info("Eviction size set to "+ eviction);
@@ -49,7 +67,7 @@ public class DistributedBank implements Bank{
                         .size(eviction);
             }
         }
-
+ 
         cacheManager = new DefaultCacheManager(gbuilder.build(),builder.build());
         accounts = cacheManager.getCache();
     }

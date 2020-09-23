@@ -91,7 +91,7 @@ exp(){
     stop
 }
 
-N_ACCOUNTS=1000000
+N_ACCOUNTS=10000
 LENGTH=60 # in sec.
 
 for b in map mem sfs;
