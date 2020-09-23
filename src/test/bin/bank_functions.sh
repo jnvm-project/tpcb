@@ -25,7 +25,7 @@ create_accounts(){
     local start=$1
     local end=$2
 
-    curl -m 1 -s -X post "${proxy}/[${start}-${end}]" > /dev/null
+    curl -m 1 -s -X post "${proxy}/${start}/${end}" > /dev/null
 }
 
 get_balance(){
@@ -59,27 +59,28 @@ continuous_transfers(){
 
     local accounts=$1
     local max_amount=$(config max_amount)
-    
+
+    # generate request (beforehand)
+    local max=50000 # due to ARG_MAX
+    local from=0
+    local to=1
+    local amount=1
+    local urls=()
+    # start=`date +%s%N`
+    for i in $(seq 1 ${max});
+    do
+	from=$((RANDOM % ${accounts}))
+	to=$((RANDOM % ${accounts}))
+	amount=$((RANDOM % max_amount))
+	urls+=(${proxy}/${from}/${to}/${amount})
+    done
+    # end=`date +%s%N`
+    # echo $(($((end-start))/1000000))
+
+    # execute them
     while true;
     do
-	# start=`date +%s%N`
-	# generate requests
-	local urls=()
-	local max=50000 # due to ARG_MAX
-	local from=0
-	local to=1
-	local amount=1
-	for i in $(seq 1 ${max});
-	do
-	    from=$((RANDOM % ${accounts}))
-	    to=$((RANDOM % ${accounts}))
-	    amount=$((RANDOM % max_amount))
-	    urls+=(${proxy}/${from}/${to}/${amount})
-	done
-	# execute them
 	curl -m 1 -s -X put $(echo ${urls[@]})
-	# end=`date +%s%N`
-	# echo $(($((end-start))/1000000))
     done
 }
 

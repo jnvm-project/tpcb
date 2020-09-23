@@ -70,6 +70,16 @@ public class Server {
             return "OK";
         });
 
+        post("/:start/:end", (req, res) -> {
+            int start = Integer.parseInt(req.params("start"));
+	    int end = Integer.parseInt(req.params("end"));
+	    for (int i=start; i<=end; i++) {
+		LOG.info("createAccount("+i+")");
+		bank.createAccount(i);
+	    }
+            return "OK";
+        });	
+	
         put("/:from/:to/:amount", (req,res) -> {
             int from = Integer.parseInt(req.params("from"));
             int to = Integer.parseInt(req.params("to"));

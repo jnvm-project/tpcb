@@ -27,10 +27,10 @@ public class DistributedBank implements Bank{
     private ConcurrentMap<Integer,Account> accounts;
 
     public DistributedBank(boolean isPersisted, int eviction){
-        GlobalConfigurationBuilder gbuilder = GlobalConfigurationBuilder.defaultClusteredBuilder();
-        gbuilder.transport().addProperty("configurationFile", "jgroups.xml");
+        GlobalConfigurationBuilder gbuilder = (new GlobalConfigurationBuilder()).nonClusteredDefault();
+        // gbuilder.transport().addProperty("configurationFile", "jgroups.xml");
         ConfigurationBuilder builder = new ConfigurationBuilder();
-        builder.clustering().cacheMode(CacheMode.DIST_SYNC);
+        builder.clustering().cacheMode(CacheMode.LOCAL);
         builder.transaction().transactionMode(TransactionMode.TRANSACTIONAL).lockingMode(LockingMode.PESSIMISTIC);
 
         // persistence

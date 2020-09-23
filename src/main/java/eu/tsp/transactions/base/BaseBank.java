@@ -1,7 +1,7 @@
 package eu.tsp.transactions.base;
 
 import java.util.Map;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -12,7 +12,7 @@ public class BaseBank implements Bank{
   private Map<Integer,Account> accounts;
 
   public BaseBank(){
-    this.accounts = new HashMap<>();
+    this.accounts = new ConcurrentHashMap<>();
   }
 
   @Override
