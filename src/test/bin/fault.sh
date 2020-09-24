@@ -42,9 +42,9 @@ tput(){
     fi
     local length=$1
     local new=1
-    for i in $(seq 1 ${length});
+    for i in $(seq 1 $((2*${length})));
     do
-	sleep 1
+	sleep 0.5
 	new=$(grep -ao OK ${TMP_DIR}/client.log | wc -l)
 	info "$((new-last))"
 	last=${new}
@@ -91,8 +91,8 @@ exp(){
     stop
 }
 
-N_ACCOUNTS=10000
-LENGTH=60 # in sec.
+N_ACCOUNTS=5000000
+LENGTH=120 # in sec.
 
 for b in map mem sfs;
 do
