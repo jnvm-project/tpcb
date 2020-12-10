@@ -13,9 +13,9 @@ import static spark.Spark.*;
 public class Server {
 
     private static final Logger LOG = LoggerFactory.getLogger(Server.class);
-    private enum Backend {MAP, MEM, SFS}
+    private enum Backend {MAP, MEM, SFS, JNVM}
 
-    @Option(name = "-backend", usage = "MAP, MEM, SFS")
+    @Option(name = "-backend", usage = "MAP, MEM, SFS, JNVM")
     private Backend backend = Backend.MAP;
 
     @Option(name = "-eviction", usage = "max. #objects before eviction")
@@ -49,6 +49,8 @@ public class Server {
             b = factory.createDistributedBank(false,eviction);
         } else if (backend.equals(Backend.SFS)) {
             b = factory.createDistributedBank(true,eviction);
+        } else if (backend.equals(Backend.JNVM)) {
+	    b = factory.createJNVMBank(true,eviction);
         }
 
         final Bank bank = b;
