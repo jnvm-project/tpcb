@@ -71,6 +71,7 @@ exp(){
     length=$3
 
     eviction=$((naccounts/10))
+    [ $backend == "jnvm" ] && eviction=1
     
     cat ${DIR}/exp.config.tmpl |
         sed s/%BACKEND%/${backend}/g |
@@ -78,6 +79,7 @@ exp(){
 	sed s/%EVICTION%/${eviction}/g \
             > ${DIR}/exp.config
 
+    rm -fr /pmem{0,1,2,3}/*
     start
     populate
     tput ${length}
