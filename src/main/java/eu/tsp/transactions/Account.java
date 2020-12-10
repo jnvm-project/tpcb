@@ -1,26 +1,15 @@
 package eu.tsp.transactions;
 
-import java.io.Serializable;
 
-public class Account implements Serializable{
-  private int id;
-  private int balance;
+public interface Account {
 
-  public Account(int id, int balance){
-    this.id = id;;
-    this.balance = balance;
-  }
+  public int getId();
+  public int getBalance();
+  public void setBalance(int balance);
 
-  public int getId(){
-    return this.id;
-  }
-
-  public int getBalance(){
-    return this.balance;
-  }
-
-  public void setBalance(int balance){
-    this.balance = balance;
+  public static Account createAccount(boolean jnvm, int id, int balance) {
+    return (jnvm) ? new OffHeapAccount(id, balance)
+                  : new VolatileAccount(id, balance);
   }
 
 }

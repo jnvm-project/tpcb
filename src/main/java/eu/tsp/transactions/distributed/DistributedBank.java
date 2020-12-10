@@ -77,7 +77,7 @@ public class DistributedBank implements Bank{
         if (this.accounts.containsKey(id)) {
             throw new IllegalArgumentException("account already existing: "+id);
         }
-        accounts.put(id, new Account(id,0));
+        accounts.put(id, Account.createAccount(false,id,0));
     }
 
     @Override
