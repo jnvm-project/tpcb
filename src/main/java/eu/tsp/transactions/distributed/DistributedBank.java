@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class DistributedBank implements Bank{
 
-    private static final String STORAGE_PATH = "/tmp/bank";
+    private static final String STORAGE_PATH = "/pmem0/";
     private static final Logger LOG = LoggerFactory.getLogger(DistributedBank.class);
 
     private DefaultCacheManager cacheManager;
@@ -47,7 +47,7 @@ public class DistributedBank implements Bank{
 		.addSingleFileStore()
 		.maxEntries(0)
 		.location(STORAGE_PATH)
-		.preload(false)
+		.preload(true)
 		.fetchPersistentState(true)
 		.purgeOnStartup(false)
 		.shared(false);
