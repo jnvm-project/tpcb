@@ -1,6 +1,7 @@
 package eu.tsp.transactions.distributed;
 
 import eu.tsp.transactions.Account;
+import eu.tsp.transactions.OffHeapAccount;
 import eu.tsp.transactions.Bank;
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.CacheMode;
@@ -20,13 +21,14 @@ import org.slf4j.LoggerFactory;
 import javax.transaction.TransactionManager;
 import java.util.concurrent.ConcurrentMap;
 import eu.telecomsudparis.jnvm.offheap.OffHeap;
+import eu.telecomsudparis.jnvm.offheap.OffHeapString;
 
 public class JNVMBank implements Bank {
 
     private static final Logger LOG = LoggerFactory.getLogger(JNVMBank.class);
 
     private DefaultCacheManager cacheManager;
-    private ConcurrentMap<Integer,Account> accounts;
+    private ConcurrentMap<OffHeapString,OffHeapAccount> accounts;
 
     public JNVMBank(boolean isPersisted, int eviction){
         GlobalConfigurationBuilder gbuilder = (new GlobalConfigurationBuilder()).nonClusteredDefault();
@@ -73,15 +75,15 @@ public class JNVMBank implements Bank {
     }
 
     @Override
-    public void createAccount(int id) throws IllegalArgumentException{
+    public void createAccount(String id) throws IllegalArgumentException{
         if (this.accounts.containsKey(id)) {
             throw new IllegalArgumentException("account already existing: "+id);
         }
-        accounts.put(id, Account.createAccount(true,id,0));
+        accounts.put(new OffHeapString(id), (OffHeapAccount) Account.createAccount(true,Integer.parseInt(id),0));
     }
 
     @Override
-    public int getBalance(int id) throws IllegalArgumentException{
+    public int getBalance(String id) throws IllegalArgumentException{
         if (!this.accounts.containsKey(id)) {
             throw new IllegalArgumentException("account not existing: "+id);
         }
@@ -90,7 +92,7 @@ public class JNVMBank implements Bank {
     }
 
     @Override
-    public void performTransfer(int from, int to, int amount){
+    public void performTransfer(String from, String to, int amount){
         if (!this.accounts.containsKey(from)) {
             createAccount(from);
         }

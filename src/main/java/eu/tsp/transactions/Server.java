@@ -60,13 +60,13 @@ public class Server {
         port(8080);
 
         get("/:id", (req, res) -> {
-            int id = Integer.parseInt(req.params("id"));
+            String id = req.params("id");
             LOG.debug("getBalance("+id+")");
             return Integer.toString(bank.getBalance(id));
         });
 
         post("/:id", (req, res) -> {
-            int id = Integer.parseInt(req.params("id"));
+            String id = req.params("id");
             LOG.debug("createAccount("+id+")");
             bank.createAccount(id);
             return "OK";
@@ -77,14 +77,14 @@ public class Server {
 	    int end = Integer.parseInt(req.params("end"));
 	    LOG.info("createAccounts("+start+","+end+")");
 	    for (int i=start; i<=end; i++) {
-		bank.createAccount(i);
+		bank.createAccount(Integer.toString(i));
 	    }
             return "OK";
         });	
 	
         put("/:from/:to/:amount", (req,res) -> {
-            int from = Integer.parseInt(req.params("from"));
-            int to = Integer.parseInt(req.params("to"));
+            String from = req.params("from");
+            String to = req.params("to");
             int amount = Integer.parseInt(req.params("amount"));
             LOG.debug("performTransfer("+from+","+to+","+amount+")");
             bank.performTransfer(from,to,amount);

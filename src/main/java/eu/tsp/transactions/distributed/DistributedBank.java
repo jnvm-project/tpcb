@@ -25,7 +25,7 @@ public class DistributedBank implements Bank{
     private static final Logger LOG = LoggerFactory.getLogger(DistributedBank.class);
 
     private DefaultCacheManager cacheManager;
-    private ConcurrentMap<Integer,Account> accounts;
+    private ConcurrentMap<String,Account> accounts;
 
     public DistributedBank(boolean isPersisted, int eviction){
         GlobalConfigurationBuilder gbuilder = (new GlobalConfigurationBuilder()).nonClusteredDefault();
@@ -75,15 +75,15 @@ public class DistributedBank implements Bank{
     }
 
     @Override
-    public void createAccount(int id) throws IllegalArgumentException{
+    public void createAccount(String id) throws IllegalArgumentException{
         if (this.accounts.containsKey(id)) {
             throw new IllegalArgumentException("account already existing: "+id);
         }
-        accounts.put(id, Account.createAccount(false,id,0));
+        accounts.put(id, Account.createAccount(false,Integer.parseInt(id),0));
     }
 
     @Override
-    public int getBalance(int id) throws IllegalArgumentException{
+    public int getBalance(String id) throws IllegalArgumentException{
         if (!this.accounts.containsKey(id)) {
             throw new IllegalArgumentException("account not existing: "+id);
         }
@@ -92,7 +92,7 @@ public class DistributedBank implements Bank{
     }
 
     @Override
-    public void performTransfer(int from, int to, int amount){
+    public void performTransfer(String from, String to, int amount){
         if (!this.accounts.containsKey(from)) {
             createAccount(from);
         }
@@ -110,8 +110,8 @@ public class DistributedBank implements Bank{
                 Account toAccount = accounts.get(to);
                 fromAccount.setBalance(fromAccount.getBalance()-amount);
                 toAccount.setBalance(toAccount.getBalance()+amount);
-                accounts.put(fromAccount.getId(),fromAccount);
-                accounts.put(toAccount.getId(),toAccount);
+                accounts.put(Integer.toString(fromAccount.getId()),fromAccount);
+                accounts.put(Integer.toString(toAccount.getId()),toAccount);
                 tm.commit();
             }catch(Throwable e){
                 retry=true;

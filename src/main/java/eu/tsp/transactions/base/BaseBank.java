@@ -9,22 +9,22 @@ import eu.tsp.transactions.Bank;
 import eu.tsp.transactions.Account;
 
 public class BaseBank implements Bank{
-  private Map<Integer,Account> accounts;
+  private Map<String,Account> accounts;
 
   public BaseBank(){
     this.accounts = new ConcurrentHashMap<>();
   }
 
   @Override
-  public void createAccount(int id) throws IllegalArgumentException{
+  public void createAccount(String id) throws IllegalArgumentException{
     if (this.accounts.containsKey(id)) {
       throw new IllegalArgumentException("account already existing: "+id);
     }
-    accounts.put(id, Account.createAccount(false,id,0));
+    accounts.put(id, Account.createAccount(false,Integer.parseInt(id),0));
   }
 
   @Override
-  public int getBalance(int id) throws IllegalArgumentException{
+  public int getBalance(String id) throws IllegalArgumentException{
     if (!this.accounts.containsKey(id)) {
       throw new IllegalArgumentException("account not existing: "+id);
     }
@@ -33,7 +33,7 @@ public class BaseBank implements Bank{
   }
 
   @Override
-  public void performTransfer(int from, int to, int amount){
+  public void performTransfer(String from, String to, int amount){
     if (!this.accounts.containsKey(from)) {
       createAccount(from);
     }
