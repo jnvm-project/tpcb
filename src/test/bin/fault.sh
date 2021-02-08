@@ -42,9 +42,9 @@ tput(){
     fi
     local length=$1
     local new=1
-    for i in $(seq 1 $((2*${length})));
+    for i in $(seq 1 $((10*${length})));
     do
-	sleep 0.5
+	sleep 0.1
 	new=$(grep -ao OK ${TMP_DIR}/client.log | wc -l)
 	info "$((new-last))"
 	last=${new}
@@ -93,10 +93,13 @@ exp(){
     stop
 }
 
-N_ACCOUNTS=5000000
+#N_ACCOUNTS=5000000
+#N_ACCOUNTS=15000000
+N_ACCOUNTS=10000000
 LENGTH=120 # in sec.
 
-for b in map mem sfs;
+for b in jnvm sfs mem;
+#for b in map mem sfs;
 do
     exp ${b} ${N_ACCOUNTS} ${LENGTH} > ${DIR}/${b}.log
 done
