@@ -100,17 +100,17 @@ public class JNVMBank implements Bank {
         boolean retry=false;
         do{
             try{
-                OffHeap.startRecording();
+                //OffHeap.startRecording();
                 TransactionManager tm = ((Cache)accounts).getAdvancedCache().getTransactionManager();
                 tm.begin();
                 Account fromAccount = accounts.get(from);
                 Account toAccount = accounts.get(to);
                 fromAccount.setBalance(fromAccount.getBalance()-amount);
                 toAccount.setBalance(toAccount.getBalance()+amount);
-                accounts.put(fromAccount.getId(),fromAccount);
-                accounts.put(toAccount.getId(),toAccount);
+                //accounts.put(fromAccount.getId(),fromAccount);
+                //accounts.put(toAccount.getId(),toAccount);
                 tm.commit();
-                OffHeap.stopRecording();
+                //OffHeap.stopRecording();
             }catch(Throwable e){
                 retry=true;
             }
