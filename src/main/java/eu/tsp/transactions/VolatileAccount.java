@@ -5,10 +5,18 @@ import java.io.Serializable;
 public class VolatileAccount implements Account, Serializable {
   private int id;
   private int balance;
+  private byte[] weight;
 
   public VolatileAccount(int id, int balance){
-    this.id = id;;
+    this.id = id;
     this.balance = balance;
+    this.weight = null;
+  }
+
+  public VolatileAccount(int id, int balance, byte[] weight){
+    this.id = id;
+    this.balance = balance;
+    this.weight = weight;
   }
 
   public int getId(){
