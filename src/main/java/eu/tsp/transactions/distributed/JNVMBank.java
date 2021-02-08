@@ -31,11 +31,13 @@ public class JNVMBank implements Bank {
     public JNVMBank(boolean isPersisted, int eviction){
         GlobalConfigurationBuilder gbuilder = (new GlobalConfigurationBuilder()).nonClusteredDefault();
         gbuilder.defaultCacheName("bank");
+/*
         gbuilder.serialization()
             .marshaller(new JavaSerializationMarshaller())
             .whiteList()
             .addRegexps("eu.tsp.transactions.Account");
-        // gbuilder.transport().addProperty("configurationFile", "jgroups.xml");
+*/
+//        gbuilder.transport().addProperty("configurationFile", "jgroups.xml");
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.clustering().cacheMode(CacheMode.LOCAL);
         builder.transaction().transactionMode(TransactionMode.TRANSACTIONAL).lockingMode(LockingMode.PESSIMISTIC);
@@ -59,9 +61,9 @@ public class JNVMBank implements Bank {
             if (eviction>0) {
                 LOG.info("Eviction size set to "+ eviction);
                 builder.memory()
-                        .evictionStrategy(EvictionStrategy.REMOVE)
+//                        .evictionStrategy(EvictionStrategy.REMOVE)
                         .evictionType(EvictionType.COUNT)
-                        .storageType(StorageType.OBJECT)
+//                         .storageType(StorageType.OBJECT)
                         .size(eviction);
             }
         }

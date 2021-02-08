@@ -30,15 +30,17 @@ public class DistributedBank implements Bank{
     public DistributedBank(boolean isPersisted, int eviction){
         GlobalConfigurationBuilder gbuilder = (new GlobalConfigurationBuilder()).nonClusteredDefault();
 	gbuilder.defaultCacheName("bank");
+        /*
 	gbuilder.serialization()
 	    .marshaller(new JavaSerializationMarshaller())
 	    .whiteList()
 	    .addRegexps("eu.tsp.transactions.Account");
+        */
         // gbuilder.transport().addProperty("configurationFile", "jgroups.xml");
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.clustering().cacheMode(CacheMode.LOCAL);
         builder.transaction().transactionMode(TransactionMode.TRANSACTIONAL).lockingMode(LockingMode.PESSIMISTIC);
-	
+
         // persistence
         if (isPersisted) {
 
@@ -56,18 +58,18 @@ public class DistributedBank implements Bank{
             storeConfigurationBuilder
 		.persistence()
 		.passivation(false); // write-through
-	    
+
             // cache eviction
             if (eviction>0) {
                 LOG.info("Eviction size set to "+ eviction);
                 builder.memory()
-                        .evictionStrategy(EvictionStrategy.REMOVE)
+                //        .evictionStrategy(EvictionStrategy.REMOVE)
                         .evictionType(EvictionType.COUNT)
-                        .storageType(StorageType.OBJECT)
+                //        .storageType(StorageType.OBJECT)
                         .size(eviction);
             }
         }
- 
+
         cacheManager = new DefaultCacheManager(gbuilder.build(),builder.build());
         accounts = cacheManager.getCache();
     }
