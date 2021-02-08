@@ -13,15 +13,23 @@ public class OffHeapAccount extends OffHeapObjectHandle implements Account {
    *  |-------+--------+-------+---------|
    *  | 0     | 0      | 4     | id      |
    *  | 1     | 4      | 4     | balance |
+   *  | 2     | 8      | 8     | weight  |
    *  end: 8 bytes
    */
-  private static final long[] offsets = { 0L, 4L };
-  private static final long SIZE = 2 * Integer.SIZE;
+  private static final long[] offsets = { 0L, 4L, 8L };
+  private static final long SIZE = 2 * Integer.SIZE + Long.SIZE;
 
   public OffHeapAccount(int id, int balance){
     super();
     setIntegerField(offsets[0], id);
     setIntegerField(offsets[1], balance);
+  }
+
+  public OffHeapAccount(int id, int balance, String weight){
+    super();
+    setIntegerField(offsets[0], id);
+    setIntegerField(offsets[1], balance);
+    setStringField(offsets[2], weight);
   }
 
   public OffHeapAccount(long offset){
