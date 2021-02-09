@@ -29,7 +29,9 @@ then
 	       --env BACKEND=$(config backend) \
        	       --env EVICTION=$(config eviction) \
 	       --mount type=bind,source=${TMP_DIR}/bank,destination=/tmp/bank \
+	       --mount type=bind,source=/pmem0,destination=/pmem0 \
 	       --net host \
+	       --cpuset-cpus="0-19,80-99" \
 	       0track/transactions:latest > /dev/null
     fi
 elif [[ "$1" == "-delete" ]]
@@ -39,6 +41,8 @@ then
     	k8s_delete_all_pods
     fi
     docker kill $(docker ps | grep transaction | awk '{print $1}')
+    rm -fr ${TMP_DIR}/bank/*
+    rm -fr /pmem0/*
 elif [[ "$1" == "-crash" ]]
 then    
     if [ "$(config local)" == "false" ]
