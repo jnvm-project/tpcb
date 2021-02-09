@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-JVMARGS="-Djava.net.preferIPv4Stack=true -Djgroups.tcp.address=${IP} -Djgroups.use.jdk_logger=true -verbose:gc"
+JVMARGS="-Xmx20g -XX:+UseG1GC -Djava.net.preferIPv4Stack=true -Djgroups.tcp.address=${IP} -Djgroups.use.jdk_logger=true -verbose:gc"
 
 CONFIG="default-jgroups-tcp.xml"
 LOG_DIR="/tmp/bank"
@@ -28,4 +28,4 @@ fi
 
 mv ${CONFIG} jgroups.xml
 
-java -cp ${JAR}:lib/* ${JVMARGS} eu.tsp.transactions.Server -backend ${BACKEND} -eviction ${EVICTION}
+$JAVA_HOME/bin/java -cp ${JAR}:lib/* ${JVMARGS} eu.tsp.transactions.Server -backend ${BACKEND} -eviction ${EVICTION}

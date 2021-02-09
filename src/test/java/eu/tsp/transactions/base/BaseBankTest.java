@@ -18,19 +18,19 @@ public class BaseBankTest{
     BankFactory factory = new BankFactory();
     this.bank = factory.createBaseBank();
     for (int i=0; i<MAX_ACCOUNTS; i++){
-      bank.createAccount(i);
+      bank.createAccount(Integer.toString(i));
     }    
   }
 
   @Test(expected=IllegalArgumentException.class)
   public void getBalanceWrongAccount(){
-    bank.getBalance(-1);
+    bank.getBalance("-1");
   }
   
   @Test
   public void simpleTransfer(){
-    bank.performTransfer(1,2,100);
-    assertEquals(bank.getBalance(1)+bank.getBalance(2),0);
+    bank.performTransfer("1","2",100);
+    assertEquals(bank.getBalance("1")+bank.getBalance("2"),0);
   }
 
   
