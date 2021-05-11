@@ -72,6 +72,7 @@ public class JNVMBank implements Bank {
 
         cacheManager = new DefaultCacheManager(gbuilder.build(),builder.build());
         accounts = cacheManager.getCache();
+        ((Cache) accounts).start();
     }
 
     @Override
