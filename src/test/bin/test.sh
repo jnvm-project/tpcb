@@ -49,7 +49,7 @@ then
     then
 	info "k8s not supported"
     fi
-    docker kill -s KILL $(docker ps | grep transaction | awk '{print $1}')
+    docker kill -s HUP $(docker ps | grep transaction | awk '{print $1}')
 elif [[ "$1" == "-populate" ]]
 then
     create_accounts 0 $((N_ACCOUNTS-1))

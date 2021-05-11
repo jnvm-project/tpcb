@@ -28,4 +28,18 @@ fi
 
 mv ${CONFIG} jgroups.xml
 
-$JAVA_HOME/bin/java -cp ${JAR}:lib/* ${JVMARGS} eu.tsp.transactions.Server -backend ${BACKEND} -eviction ${EVICTION}
+trap stopstart SIGHUP
+child=""
+
+stopstart() {
+    [ ! -z $child ] && kill -KILL $child && wait $child
+    run
+}
+
+run() {
+    $JAVA_HOME/bin/java -cp ${JAR}:lib/* ${JVMARGS} eu.tsp.transactions.Server -backend ${BACKEND} -eviction ${EVICTION} &
+    child=$!
+}
+
+run
+wait $child
