@@ -93,12 +93,12 @@ exp(){
     stop
 }
 
-N_ACCOUNTS=10000000
+#N_ACCOUNTS=5000000
 #N_ACCOUNTS=15000000
-#N_ACCOUNTS=50000
+N_ACCOUNTS=10000000
 LENGTH=120 # in sec.
 
-for b in jnvm sfs;
+for b in jnvm sfs mem;
 #for b in map mem sfs;
 do
     exp ${b} ${N_ACCOUNTS} ${LENGTH} > ${DIR}/${b}.log
