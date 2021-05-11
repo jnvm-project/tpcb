@@ -6,7 +6,7 @@ import eu.telecomsudparis.jnvm.offheap.MemoryBlockHandle;
 
 public class OffHeapAccount extends OffHeapObjectHandle implements Account {
 
-  private static final long CLASS_ID = OffHeap.Klass.registerUserKlass(OffHeapAccount.class, 13L);
+  private static final long CLASS_ID = OffHeap.Klass.registerUserKlass(OffHeapAccount.class, 19L);
 
   /* PMEM Layout :
    *  | Index | Offset | Bytes | Name    |
