@@ -7,7 +7,7 @@ import eu.telecomsudparis.jnvm.offheap.MemoryBlockHandle;
 
 public class OffHeapAccount extends OffHeapObjectHandle implements Account {
 
-  private static final long CLASS_ID = OffHeap.Klass.registerUserKlass(OffHeapAccount.class, 13L);
+  private static final long CLASS_ID = OffHeap.Klass.registerUserKlass(OffHeapAccount.class);
 
   /* PMEM Layout :
    *  | Index | Offset | Bytes | Name    |
@@ -41,8 +41,15 @@ public class OffHeapAccount extends OffHeapObjectHandle implements Account {
     this(block.getOffset());
   }
 
+  public OffHeapAccount(Void v, long offset){
+    this(offset);
+  }
+
   public long size() { return SIZE; }
   public long classId() { return CLASS_ID; }
+  public void descend() {
+    OffHeap.gcMark(OffHeap.baseAddr() + getLongField(offsets[2]));
+  }
 
   public int getId(){
     return getIntegerField(offsets[0]);
