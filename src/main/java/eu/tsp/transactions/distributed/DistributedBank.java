@@ -26,6 +26,7 @@ public class DistributedBank implements Bank{
 
     private DefaultCacheManager cacheManager;
     private ConcurrentMap<String,Account> accounts;
+    private boolean isPersisted;
 
     public DistributedBank(boolean isPersisted, int eviction){
         GlobalConfigurationBuilder gbuilder = (new GlobalConfigurationBuilder()).nonClusteredDefault();
@@ -70,6 +71,7 @@ public class DistributedBank implements Bank{
             }
         }
 
+        isPersisted = isPersisted;
         cacheManager = new DefaultCacheManager(gbuilder.build(),builder.build());
         cacheManager.getCache().start();
         accounts = cacheManager.getCache();
@@ -93,13 +95,21 @@ public class DistributedBank implements Bank{
     }
 
     @Override
-    public void performTransfer(String from, String to, int amount){
+    public void performTransfer(String from, String to, int amount) throws IllegalArgumentException{
         if (!this.accounts.containsKey(from)) {
-            createAccount(from);
+            if (isPersisted) {
+                throw new IllegalArgumentException("account not existing: "+from);
+            } else {
+                createAccount(from);
+            }
         }
 
         if (!this.accounts.containsKey(to)) {
-            createAccount(to);
+            if (isPersisted) {
+                throw new IllegalArgumentException("account not existing: "+to);
+            } else {
+                createAccount(to);
+            }
         }
 
         boolean retry=false;
