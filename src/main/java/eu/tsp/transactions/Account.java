@@ -13,9 +13,8 @@ public interface Account {
     Random random = ThreadLocalRandom.current();
     byte[] r = new byte[128];
     random.nextBytes(r);
-    String s = new String(r);
-    return (jnvm) ? new OffHeapAccount(id, balance, s)
-                  : new VolatileAccount(id, balance, s);
+    return (jnvm) ? new OffHeapAccount(id, balance, r)
+                  : new VolatileAccount(id, balance, r);
   }
 
 }

@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class VolatileAccount implements Account, Serializable {
   private int id;
   private int balance;
-  private String weight;
+  private byte[] weight;
 
   public VolatileAccount(int id, int balance){
     this.id = id;
@@ -13,7 +13,7 @@ public class VolatileAccount implements Account, Serializable {
     this.weight = null;
   }
 
-  public VolatileAccount(int id, int balance, String weight){
+  public VolatileAccount(int id, int balance, byte[] weight){
     this.id = id;
     this.balance = balance;
     this.weight = weight;

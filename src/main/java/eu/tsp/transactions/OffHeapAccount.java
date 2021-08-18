@@ -2,6 +2,7 @@ package eu.tsp.transactions;
 
 import eu.telecomsudparis.jnvm.offheap.OffHeap;
 import eu.telecomsudparis.jnvm.offheap.OffHeapObjectHandle;
+import eu.telecomsudparis.jnvm.offheap.OffHeapByteArray;
 import eu.telecomsudparis.jnvm.offheap.MemoryBlockHandle;
 
 public class OffHeapAccount extends OffHeapObjectHandle implements Account {
@@ -25,11 +26,11 @@ public class OffHeapAccount extends OffHeapObjectHandle implements Account {
     setIntegerField(offsets[1], balance);
   }
 
-  public OffHeapAccount(int id, int balance, String weight){
+  public OffHeapAccount(int id, int balance, byte[] weight){
     super();
     setIntegerField(offsets[0], id);
     setIntegerField(offsets[1], balance);
-    setStringField(offsets[2], weight);
+    setHandleField(offsets[2], new OffHeapByteArray(weight));
   }
 
   public OffHeapAccount(long offset){
