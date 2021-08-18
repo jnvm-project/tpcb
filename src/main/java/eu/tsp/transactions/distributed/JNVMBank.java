@@ -72,6 +72,7 @@ public class JNVMBank implements Bank {
         }
 
         isPersisted = isPersisted;
+        OffHeap.finishInit();
         cacheManager = new DefaultCacheManager(gbuilder.build(),builder.build());
         cacheManager.getCache().start();
         accounts = cacheManager.getCache();
