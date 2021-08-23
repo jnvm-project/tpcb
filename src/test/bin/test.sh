@@ -32,7 +32,7 @@ then
 	       --mount type=bind,source=/pmem0,destination=/pmem0 \
 	       --net host \
 	       --cpuset-cpus="0-19,80-99" \
-	       0track/transactions:latest > /dev/null
+	       gingerbreadz/transactions:latest > /dev/null
     fi
 elif [[ "$1" == "-delete" ]]
 then    
