@@ -25,7 +25,7 @@ then
 	k8s_create_all_pods
 	gsutil rm -r gs://$(config bucket)/* >&/dev/null # clean bucket
     else
-	docker run --rm -d \
+	docker run --rm -d --privileged \
 	       --env BACKEND=$(config backend) \
        	       --env EVICTION=$(config eviction) \
 	       --env NUMA_NODE=${NUMA_NODE:-0} \

@@ -101,5 +101,5 @@ LENGTH=120 # in sec.
 for b in jnvm sfs mem;
 #for b in map mem sfs;
 do
-    exp ${b} ${N_ACCOUNTS} ${LENGTH} > ${DIR}/${b}.log
+    exp ${b} ${N_ACCOUNTS} ${LENGTH} > ${EXP_OUTDIR:-$DIR}/${b}.log
 done
