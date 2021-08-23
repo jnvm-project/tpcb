@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-JVMARGS="-Xmx20g -XX:+UseG1GC -Djava.net.preferIPv4Stack=true -Djgroups.tcp.address=${IP} -Djgroups.use.jdk_logger=true -verbose:gc"
+JVMARGS="-Xmx${JHEAP_SIZE} -XX:+UseG1GC -Djava.net.preferIPv4Stack=true -Djgroups.tcp.address=${IP} -Djgroups.use.jdk_logger=true -verbose:gc"
 
 CONFIG="default-jgroups-tcp.xml"
 LOG_DIR="/tmp/bank"
@@ -37,7 +37,7 @@ stopstart() {
 }
 
 run() {
-    $JAVA_HOME/bin/java -cp ${JAR}:lib/* ${JVMARGS} eu.tsp.transactions.Server -backend ${BACKEND} -eviction ${EVICTION} &
+    numactl -N ${NUMA_NODE} -- $JAVA_HOME/bin/java -cp ${JAR}:lib/* ${JVMARGS} eu.tsp.transactions.Server -backend ${BACKEND} -eviction ${EVICTION} &
     child=$!
 }
 
