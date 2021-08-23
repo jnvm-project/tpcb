@@ -8,6 +8,10 @@ ENV IP=127.0.0.1
 ENV JAR=$NAME-1.0.jar
 ENV BACKEND=MAP
 ENV EVICTION=0
+ENV NUMA_NODE=0
+ENV JHEAP_SIZE=20g
+
+RUN set -eux; apt-get update; apt-get install -y --no-install-recommends numactl; rm -rf /var/lib/apt/lists/*
 
 WORKDIR $NAME
 

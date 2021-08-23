@@ -28,10 +28,11 @@ then
 	docker run --rm -d \
 	       --env BACKEND=$(config backend) \
        	       --env EVICTION=$(config eviction) \
+	       --env NUMA_NODE=${NUMA_NODE:-0} \
+	       --env JHEAP_SIZE=${JHEAP_SIZE:-20g} \
 	       --mount type=bind,source=${TMP_DIR}/bank,destination=/tmp/bank \
-	       --mount type=bind,source=/pmem0,destination=/pmem0 \
+	       --mount type=bind,source=${PMEM_MOUNT:-/pmem0},destination=/pmem0 \
 	       --net host \
-	       --cpuset-cpus="0-19,80-99" \
 	       gingerbreadz/transactions:latest > /dev/null
     fi
 elif [[ "$1" == "-delete" ]]
