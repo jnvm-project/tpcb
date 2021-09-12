@@ -98,6 +98,12 @@ exp(){
 N_ACCOUNTS=10000000
 LENGTH=120 # in sec.
 
+#external parameter overrides
+if [ $EXP_PRESET == "tiny" ] ; then
+N_ACCOUNTS=10000
+LENGTH=20 # in sec.
+fi
+
 for b in jnvm sfs mem;
 #for b in map mem sfs;
 do
