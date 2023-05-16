@@ -73,8 +73,8 @@ public class DistributedBank implements Bank{
 
         isPersisted = isPersisted;
         cacheManager = new DefaultCacheManager(gbuilder.build(),builder.build());
-        cacheManager.getCache().start();
         accounts = cacheManager.getCache();
+        ((Cache) accounts).start();
     }
 
     @Override
